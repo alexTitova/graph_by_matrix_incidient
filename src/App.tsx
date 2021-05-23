@@ -42,7 +42,7 @@ class App extends Template
 
     protected getArea(): React.SFC<{}>
     {
-        this.graph = this.empty_graph();
+        //this.graph = this.empty_graph();
         return () => <GraphVisualizer
             //graph = {GraphGenerator.generate(0)} //вот здесь не генерится
             graph={this.graph}
@@ -171,12 +171,20 @@ class App extends Template
                 <div>
                     <form>
                         <span> Матрица инциденций </span>
-
+                        <br/>
                         <Matrix rows={this.matrix.length}
                                 columns={this.matrix[0].length}
                                 readonly={true}
                                 defaultValues={this.matrix}/>
-
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
                         <button type="button"
                                 onClick={() => {
                                     this.task_part += 1;
@@ -203,6 +211,7 @@ class App extends Template
                             <button type="button"
                                     onClick={() => {
                                         this.task_part = 1;
+                                        this.chekc_count -=1;
                                         this.forceUpdate();
                                     }}> Исправить ошибки
                             </button>
