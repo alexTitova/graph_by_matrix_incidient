@@ -26,7 +26,7 @@ class App extends Template
                             [1, 0,0],
                              [0,1,0],
                             [0,0,1]]; //матрицв тиз варианта
-    //matrix:number [][] = store.GetState().matrix
+
 
 
     constructor(props:{})
@@ -170,56 +170,18 @@ class App extends Template
             return () =>
                 <div>
                     <form>
+                        <span> Постройте граф по матрице</span>
                         <span> Матрица инциденций </span>
                         <br/>
                         <Matrix rows={this.matrix.length}
                                 columns={this.matrix[0].length}
                                 readonly={true}
                                 defaultValues={this.matrix}/>
-                        <br/>
-                        <br/>
-                        <br/>
-                        <br/>
-                        <br/>
-                        <br/>
-                        <br/>
-                        <br/>
-                        <br/>
-                        <button type="button"
-                                onClick={() => {
-                                    this.task_part += 1;
-                                    this.forceUpdate();
-                                }}> Проверить граф
-                        </button>
+
                     </form>
                 </div>
         }
-        if (this.task_part === 2) {
-            if (this.graph_check())
-                return () => (
-                    <div>
-                        <form>
-                            <span> Все правильно. Нажмите зеленую галочку для подсчета результата</span>
-                        </form>
-                    </div>
-                );
-            else {
-                return () => (
-                    <div>
-                        <form>
-                            <span> Есть ошибки</span>
-                            <button type="button"
-                                    onClick={() => {
-                                        this.task_part = 1;
-                                        this.chekc_count -=1;
-                                        this.forceUpdate();
-                                    }}> Исправить ошибки
-                            </button>
-                        </form>
-                    </div>
-                );
-            }
-        }
+
 
 
     }
@@ -227,7 +189,11 @@ class App extends Template
 
     private calculate()
     {
-        let  res:number = this.chekc_count*(this.graph.edges.length+this.graph.vertices.length);
+        let isChecked = this.graph_check();
+        let res:number = 0;
+        if(!isChecked) {
+            res = this.chekc_count * (this.graph.edges.length + this.graph.vertices.length);
+        }
         return {success: res===0, fee: res}
     }
 }
