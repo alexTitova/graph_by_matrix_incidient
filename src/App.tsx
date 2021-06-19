@@ -21,11 +21,12 @@ class App extends Template
 {
     task_part =1;
     chekc_count=0; //количество проверок
-    graph: IGraph<IVertex, IEdge> = this.empty_graph();  //ф студента
-    matrix: number [][] = [[1, 1, 1],
-                            [1, 0,0],
-                             [0,1,0],
-                            [0,0,1]]; //матрицв тиз варианта
+    graph: IGraph<IVertex, IEdge> = GraphGenerator.generate(0);
+    matrix: number [][] = this.get_matrix_by_variant();
+    //matrix: number [][] = [[1, 1, 1],
+    //                        [1, 0,0],
+    //                         [0,1,0],
+    //                        [0,0,1]]; //матрицв тиз варианта
 
 
 
@@ -38,21 +39,63 @@ class App extends Template
 
 
 
+    componentWillMount()
+    {
+        //для инициализации графа
+        let graphModel:  IGraph<IVertex, IEdge> = new Graph() as unknown as IGraph<IVertex, IEdge>;
+        let init:(graph: IGraph<IVertex, IEdge>) => void;
+        init = function (graph: IGraph<IVertex, IEdge>) {
+            graphModel = graph;
+        }
+        //
 
+        init(this.graph);
+
+        console.log("component")
+    }
 
     protected getArea(): React.SFC<{}>
     {
-        //this.graph = this.empty_graph();
+        //      this.graph = this.empty_graph();
+        // this.graph = this.graph_by_variant();
+        //    this.matrix = this.get_matrix_by_variant();
+        console.log("getArea");
         return () => <GraphVisualizer
-            //graph = {GraphGenerator.generate(0)} //вот здесь не генерится
-            graph={this.graph}
+            graph = {graphModel} //вот здесь не генерится
+            // graph={this.graph}
+            //    graph = { GraphGenerator.generate(0)}
             adapterType={'writable'}
             incidentEdges={false}
             weightedEdges={false}
             namedEdges={true}
         />;
+
     }
 
+    private get_matrix_by_variant():number[][]
+    {
+        const data = sessionStorage.getItem('variant');
+        let matrix:number[][] = [];
+        let objectData;
+        try
+        {
+            objectData = JSON.parse(data || 'null');
+            console.log('The variant is successfully parsed');
+        }
+        catch(err)
+        {
+            console.log('Error while JSON parsing');
+        }
+        console.log(this.matrixManager(objectData.data[0].value));
+        if(data)
+        {
+            matrix=this.matrixManager(objectData.data[0].value);
+            console.log('The matrix is successfully built from the variant');
+        }
+
+        console.log("matrix_by var");
+        return matrix;
+    }
 
 
     getTaskToolbar()
@@ -72,7 +115,7 @@ class App extends Template
         };
         return Toolbar;
     }
-
+    /*
     private empty_graph():IGraph<IVertex, IEdge>{
         const data = sessionStorage.getItem('variant');
         let graph: IGraph<IVertex, IEdge> = new Graph() as unknown as IGraph<IVertex, IEdge>;
@@ -99,7 +142,7 @@ class App extends Template
         }
         return graph;
     }
-
+*/
 
 
     private get_matrixIncidient_byGraph(student_graph: IGraph<IVertex, IEdge>): number[][]
@@ -129,11 +172,11 @@ class App extends Template
     private graph_check(): boolean
     {
         let flag: boolean = true;
-        let matrixInc_by_student_graph:number[][] = this.get_matrixIncidient_byGraph(this.graph);
+        let matrixInc_by_student_graph:number[][] = this.get_matrixIncidient_byGraph(graphModel);
         let i:number =0;
         let j:number =0;
 
-        if(this.graph.vertices.length===this.matrix.length && this.graph.edges.length===this.matrix[0].length)
+        if(graphModel.vertices.length===this.matrix.length && graphModel.edges.length===this.matrix[0].length)
         {
             while (flag && i<this.graph.vertices.length)
             {
@@ -192,7 +235,7 @@ class App extends Template
         let isChecked = this.graph_check();
         let res:number = 0;
         if(!isChecked) {
-            res = this.chekc_count * (this.graph.edges.length + this.graph.vertices.length);
+            res = this.chekc_count * (graphModel.edges.length + graphModel.vertices.length);
         }
         return {success: res===0, fee: res}
     }
